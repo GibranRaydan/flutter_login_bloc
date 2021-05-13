@@ -59,26 +59,35 @@ class LoginPage extends StatelessWidget {
   }
 
   Widget _loginButton(LoginBloc bloc) {
-   return StreamBuilder(
-      stream: bloc.formValidationStream ,
-      builder: (BuildContext context, AsyncSnapshot snapshot){
-        return ElevatedButton(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 100.0, vertical: 15.0),
-          child: Text('Login'),
-        ),
-        style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-            backgroundColor:
-                MaterialStateProperty.all<Color>(Colors.deepPurple),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ))),
-        onPressed: snapshot.hasData ? (){} : null);
-      }
-    );
-    
+    return StreamBuilder(
+        stream: bloc.formValidationStream,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          return ElevatedButton(
+              child: Container(
+                padding:
+                    EdgeInsets.symmetric(horizontal: 100.0, vertical: 15.0),
+                child: Text('Login'),
+              ),
+              style: ButtonStyle(
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.deepPurple),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ))),
+              onPressed: snapshot.hasData ? () => _login(context, bloc) : null);
+        });
+  }
+
+  _login(BuildContext context, LoginBloc bloc) {
+    print("*********EMAIL*********");
+    print("${bloc?.email}");
+    print("*********Password*********");
+    print("${bloc?.password}");
+
+    Navigator.pushReplacementNamed(context,'home');
   }
 
   Widget _emailField(LoginBloc bloc) {
