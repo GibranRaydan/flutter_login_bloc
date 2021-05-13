@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_bloc/bloc/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key key}) : super(key: key);
@@ -10,6 +11,7 @@ class LoginPage extends StatelessWidget {
       ));
 
   Widget _loginForm(BuildContext context) {
+    final bloc = Provider.of(context);
     final size = MediaQuery.of(context).size;
 
     return SingleChildScrollView(
@@ -40,23 +42,27 @@ class LoginPage extends StatelessWidget {
                   style: TextStyle(fontSize: 30.0, color: Colors.deepPurple),
                 ),
                 SizedBox(height: 40.0),
-                _emailField(),
+                _emailField(bloc),
                 SizedBox(height: 30.0),
-                _passwordField(),
+                _passwordField(bloc),
                 SizedBox(height: 30.0),
-                _loginButton()
+                _loginButton(bloc)
               ],
             ),
           ),
-          Text('Sing in', style: TextStyle(color: Colors.deepPurple, fontSize: 20.0)),
+          Text('Sing in',
+              style: TextStyle(color: Colors.deepPurple, fontSize: 20.0)),
           SizedBox(height: 20.0)
         ],
       ),
     );
   }
 
-  Widget _loginButton() {
-    return ElevatedButton(
+  Widget _loginButton(LoginBloc bloc) {
+   return StreamBuilder(
+      stream: bloc.formValidationStream ,
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        return ElevatedButton(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 100.0, vertical: 15.0),
           child: Text('Login'),
@@ -69,37 +75,55 @@ class LoginPage extends StatelessWidget {
                 RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ))),
-        onPressed: () {});
+        onPressed: snapshot.hasData ? (){} : null);
+      }
+    );
+    
   }
 
-  Widget _emailField() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: TextField(
-        keyboardType: TextInputType.emailAddress,
-        decoration: InputDecoration(
-            icon: Icon(
-              Icons.email,
-              color: Colors.deepPurple,
-            ),
-            hintText: 'ejemplo@mail.com',
-            labelText: 'Email'),
-      ),
+  Widget _emailField(LoginBloc bloc) {
+    return StreamBuilder(
+      stream: bloc.emailStream,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+                icon: Icon(
+                  Icons.email,
+                  color: Colors.deepPurple,
+                ),
+                hintText: 'ejemplo@mail.com',
+                labelText: 'Email',
+                counterText: snapshot.data),
+            onChanged: bloc.changeEmail,
+          ),
+        );
+      },
     );
   }
 
-  Widget _passwordField() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: TextField(
-        keyboardType: TextInputType.emailAddress,
-        decoration: InputDecoration(
-            icon: Icon(
-              Icons.lock,
-              color: Colors.deepPurple,
-            ),
-            labelText: 'Password'),
-      ),
+  Widget _passwordField(LoginBloc bloc) {
+    return StreamBuilder(
+      stream: bloc.passwordStream,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+                icon: Icon(
+                  Icons.lock,
+                  color: Colors.deepPurple,
+                ),
+                labelText: 'Password',
+                counterText: snapshot.data,
+                errorText: snapshot.error),
+            onChanged: bloc.changePassword,
+          ),
+        );
+      },
     );
   }
 
